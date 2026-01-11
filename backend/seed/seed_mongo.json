@@ -1,0 +1,13 @@
+[{
+        "recipeId": 1,
+        "comments": [
+            { "user": "Isaac", "text": "delicieux!", "rating": 5 }
+        ]
+    },
+    {
+        "recipeId": 2,
+        "comments": [
+            { "user": "Hafsa", "text": "good", "rating": 4 }
+        ]
+    }
+]

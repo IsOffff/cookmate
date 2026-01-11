@@ -1,0 +1,22 @@
+services:
+  #backend:
+    #build:
+      #####- chroma
+
+  mongo:
+    image: mongo:6
+    container_name: cookmate_mongo
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:7
+    container_name: cookmate_redis
+    ports:
+      - "6379:6379"
+
+  chroma:
+    image: chromadb/chroma
+    container_name: cookmate_chroma
+    ports:
+      - "8000:8000"
