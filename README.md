@@ -2,17 +2,17 @@
 
 ## Contexte
 
-Ce projet s’inscrit dans le cadre du TP de bases de données . L’objectif principal est de mettre en place une architecture multi-bases NoSQL conteneurisée, démontrable, documentée et justifiée techniquement.
+Ce projet s’inscrit dans le cadre du TP de bases de données avancées . L’objectif principal est de mettre en place une **architecture multi-bases NoSQL  conteneurisée
 
-Ma responsabilité porte sur la **conception, le déploiement et la démonstration** de l’infrastructure NoSQL suivante :
+Ma responsabilité porte sur la conception, le déploiement et la démonstration** de l’infrastructure NoSQL suivante :
 
 * **Redis** : cache clé/valeur
 * **MongoDB** : base de documents
 * **ChromaDB** : base vectorielle (recherche sémantique)
 
-L’ensemble est orchestré avec **Docker Compose**.
+L’ensemble est orchestré avec Docker Compose**.
 
----------------------
+---
 
 ## Objectifs pédagogiques
 
@@ -22,22 +22,23 @@ L’ensemble est orchestré avec **Docker Compose**.
 * Fournir des preuves de fonctionnement
 * Être capable d’expliquer chaque choix
 
----------------------
+---
 
 ## Architecture
 
 ```
 Client / Terminal
         │
+    
 Docker Compose
  ├── Redis   (cache rapide)
- ├── MongoDB (documents flexibles)
+ ── MongoDB (documents flexibles)
  └── Chroma  (recherche vectorielle)
 ```
 
 Chaque service est isolé dans son propre conteneur.
 
------------------
+---
 
 ## Rôle de chaque base
 
@@ -51,13 +52,13 @@ Avantages :
 * Accès ultra-rapide
 * Simplicité
 
------------------
+---
 
 ### MongoDB
 
-MongoDB est une base orientée documents (JSON/BSON). Elle permet de stocker des données semi-structurées sans schéma strict.
+MongoDB est une base orientée documents (JSON/BSON). Elle permet de stocker des données **semi-structurées** sans schéma strict.
 
-Dans ce projet, elle est utilisée pour stocker des commentaires utilisateurs liés à des recettes.
+Dans ce projet, elle est utilisée pour stocker des **commentaires utilisateurs** liés à des recettes.
 
 Avantages :
 
@@ -65,11 +66,11 @@ Avantages :
 * Facile à faire évoluer
 * Adaptée aux données hétérogènes
 
-----------------
+---
 
 ### ChromaDB
 
-Chroma est une base vectorielle. Elle est conçue pour effectuer des recherches par similarité sémantique
+Chroma est une base vectorielle. Elle est conçue pour effectuer des recherches par **similarité sémantique**.
 
 Contrairement aux bases classiques, elle ne compare pas seulement des mots-clés mais des vecteurs représentant le sens.
 
@@ -79,7 +80,7 @@ Avantages :
 * Recommandation
 * Similarité de contenus
 
-----------
+---
 
 ## Lancement du projet
 
@@ -91,52 +92,50 @@ docker compose up -d
 
 ### 2. Vérifier que tout est lancé
 
-```bash
+bash
 docker ps
-```
-----------
+
 ---
 
 ## Preuves de fonctionnement
 
 ### Redis — preuve de cache
 
-```bash
+bash
 docker exec -it cookmate_redis redis-cli
 SET last_search "pasta carbonara"
 GET last_search
 exit
-```
 
--------------
+---
 
-### MongoDB — lecture des données
+### MongoDB — lecture des données seedées
 
-```bash
+bash
 docker exec -it cookmate_mongo mongosh --quiet --eval 'const dbc=db.getSiblingDB("cookmate"); printjson(dbc.comments.find().limit(10).toArray())'
-```
 
---------------
+
+---------
 
 ### Chroma — vérification du service
 
-```bash
+bash
 curl http://localhost:8000/api/v2/heartbeat
-```
 
-------------------
+
+---
 
 ## Seed des données MongoDB
 
 Un script Python permet d’initialiser MongoDB avec des données de test.
 
-```bash
+bash
 python3 backend/seed/seed_mongo.py
-```
+
 
 Il insère automatiquement des commentaires dans la base `cookmate`.
 
-------------
+---
 
 ## Justification des choix
 
@@ -147,9 +146,9 @@ Il insère automatiquement des commentaires dans la base `cookmate`.
 | Recherche intelligente | Chroma   | Vecteurs sémantiques    |
 | Reproductibilité       | Docker   | Isolation & portabilité |
 
------
+---
 
-## Réalisation
+## Ce que j’ai réalisé
 
 * Conception de l’architecture NoSQL
 * Mise en place des conteneurs Docker
@@ -157,15 +156,16 @@ Il insère automatiquement des commentaires dans la base `cookmate`.
 * Tests et preuves de fonctionnement
 * Documentation
 
-----------------
+---
 
 ## Limites
 
 Cette partie concerne uniquement l’infrastructure NoSQL. Le backend métier et la base SQL relèvent d’une autre partie du projet.
 
----------------
+----------------
 
 ## Conclusion
 
-Cette infrastructure démontre l’utilisation cohérente de plusieurs bases NoSQL, chacune ayant un rôle précis.
+Cette infrastructure démontre l’utilisation cohérente de plusieurs bases NoSQL, chacune ayant un rôle précis. Elle est fonctionnelle, testable et démontrable.
+
 
