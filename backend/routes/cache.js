@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const redis = require("../config/redis");
-const sql = require("../config/sql");
+const sql = require("../config/db");
 
 router.get("/:id/cache", async(req, res) => {
     const id = req.params.id;
