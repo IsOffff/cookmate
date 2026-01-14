@@ -1,8 +1,4 @@
 services:
-  #backend:
-    #build:
-      #####- chroma
-
   mongo:
     image: mongo:6
     container_name: cookmate_mongo
@@ -20,3 +16,19 @@ services:
     container_name: cookmate_chroma
     ports:
       - "8000:8000"
+
+  mysql:
+    image: mysql:8
+    container_name: cookmate_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cookmate
+      MYSQL_USER: cookmate
+      MYSQL_PASSWORD: cookmate
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

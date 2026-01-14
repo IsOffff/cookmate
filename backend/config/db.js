@@ -1,20 +1,14 @@
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
-// créer la connexion
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'RAKKAZHAFSA',       
-  database: 'recipes_db'
+const pool = mysql.createPool({
+    host: "127.0.0.1",
+    user: "cookmate",
+    password: "cookmate",
+    database: "cookmate",
+    port: 3306,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-// connecter
-db.connect((err) => {
-  if (err) {
-    console.error('Erreur de connexion MySQL :', err);
-    return;
-  }
-  console.log('Connecté à MySQL');
-});
-
-module.exports = db;
+module.exports = pool.promise();
