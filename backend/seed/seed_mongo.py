@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 
-MongoClient("mongodb://cookmate_mongo:27017")
-
+client = MongoClient("mongodb://cookmate_mongo:27017")
 
 db = client["cookmate"]
 comments = db["comments"]
@@ -19,9 +18,10 @@ comments.insert_many([
     {
         "recipeId": 2,
         "comments": [
-            {"user": "khadi", "message": "J’ai adoré", "rating": 5}
+            {"user": "Khadi", "message": "J’ai adoré", "rating": 5}
         ]
     }
 ])
 
-print("mongo seed est fonctionnel")
+print("Mongo seed OK")
+
