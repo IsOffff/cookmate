@@ -1,4 +1,29 @@
 services:
+  backend:
+    image: node:20-alpine
+    container_name: cookmate_backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install && npm start"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - redis
+      - chroma
+      - mysql
+    environment:
+      MONGO_URL: "mongodb://mongo:27017/cookmate"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      CHROMA_URL: "http://chroma:8000"
+      MYSQL_HOST: "mysql"
+      MYSQL_USER: "cookmate"
+      MYSQL_PASSWORD: "cookmate"
+      MYSQL_DATABASE: "cookmate"
+      MYSQL_PORT: "3306"
+
   mongo:
     image: mongo:6
     container_name: cookmate_mongo
@@ -12,7 +37,7 @@ services:
       - "6379:6379"
 
   chroma:
-    image: chromadb/chroma
+    image: chromadb/chroma:latest
     container_name: cookmate_chroma
     ports:
       - "8000:8000"

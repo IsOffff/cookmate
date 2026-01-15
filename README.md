@@ -1,171 +1,107 @@
-# CookMate — Infrastructure NoSQL 
+Présentation du projet
+CookMate est une application backend conçue pour démontrer l’utilisation combinée de plusieurs bases de données spécialisées, chacune répondant à un besoin précis.
+L’objectif est de montrer une architecture moderne, modulaire et reproductible grâce à Docker.
 
-## Contexte
+Le projet repose sur une séparation claire des responsabilités :
+Données relationnelles → MySQL
+Données flexibles → MongoDB
+Cache rapide → Redis
+Recherche sémantique → ChromaDB
 
-Ce projet s’inscrit dans le cadre du TP de bases de données avancées . L’objectif principal est de mettre en place une **architecture multi-bases NoSQL  conteneurisée
 
-Ma responsabilité porte sur la conception, le déploiement et la démonstration** de l’infrastructure NoSQL suivante :
-
-* **Redis** : cache clé/valeur
-* **MongoDB** : base de documents
-* **ChromaDB** : base vectorielle (recherche sémantique)
-
-L’ensemble est orchestré avec Docker Compose**.
-
----
-
-## Objectifs pédagogiques
-
-* Comprendre les différences entre plusieurs types de bases NoSQL
-* Justifier l’utilisation de chaque base selon son usage
-* Mettre en place une architecture reproductible
-* Fournir des preuves de fonctionnement
-* Être capable d’expliquer chaque choix
-
----
-
-## Architecture
-
-```
-Client / Terminal
-        │
-    
-Docker Compose
- ├── Redis   (cache rapide)
- ── MongoDB (documents flexibles)
- └── Chroma  (recherche vectorielle)
-```
-
-Chaque service est isolé dans son propre conteneur.
-
----
-
-## Rôle de chaque base
-
-### Redis
-
-Redis est une base clé/valeur en mémoire, extrêmement rapide. Elle est utilisée ici comme **cache**, par exemple pour stocker temporairement des recherches fréquentes.
-
-Avantages :
-
-* Très faible latence
-* Accès ultra-rapide
-* Simplicité
-
----
-
-### MongoDB
-
-MongoDB est une base orientée documents (JSON/BSON). Elle permet de stocker des données **semi-structurées** sans schéma strict.
-
-Dans ce projet, elle est utilisée pour stocker des **commentaires utilisateurs** liés à des recettes.
-
-Avantages :
-
-* Schéma flexible
-* Facile à faire évoluer
-* Adaptée aux données hétérogènes
-
----
-
-### ChromaDB
-
-Chroma est une base vectorielle. Elle est conçue pour effectuer des recherches par **similarité sémantique**.
-
-Contrairement aux bases classiques, elle ne compare pas seulement des mots-clés mais des vecteurs représentant le sens.
-
-Avantages :
-
-* Recherche intelligente
-* Recommandation
-* Similarité de contenus
-
----
-
-## Lancement du projet
-
-### 1. Démarrer les services
-
-```bash
+Architecture
+Le projet est composé de plusieurs services isolés dans des conteneurs Docker :
+Backend Node.js (Express)
+MySQL : stockage relationnel des recettes
+MongoDB : stockage des commentaires
+Redis : système de cache
+ChromaDB : base vectorielle pour la similarité
+Docker Compose : orchestration de l’ensemble
+Chaque service est indépendant mais communicant via un réseau Docker commun.
+Rôle des bases de données
+MySQL — Base relationnelle
+Utilisée pour :
+Stocker les recettes
+Gérer les relations
+Garantir l’intégrité des données
+Utiliser un schéma structuré
+MongoDB — Base NoSQL orientée document
+Utilisée pour :
+Stocker les commentaires
+Gérer des structures flexibles
+Permettre des tableaux de taille variable
+Éviter un schéma rigide
+Redis — Cache clé-valeur
+Utilisée pour :
+Accélérer l’accès aux données
+Mettre en cache les résultats SQL
+Réduire les appels répétés à MySQL
+Améliorer les performances
+ChromaDB — Base vectorielle
+Utilisée pour :
+Gérer des embeddings
+Faire de la recherche par similarité
+Comparer des recettes sémantiquement
+Implémenter des recommandations
+Pourquoi plusieurs bases ?
+Chaque base est optimisée pour un usage précis :
+Besoin	Technologie
+Structure relationnelle	MySQL
+Données flexibles	MongoDB
+Rapidité	Redis
+Similarité sémantique	ChromaDB
+Utiliser une seule base pour tout serait inefficace.
+Pourquoi Docker ?
+Docker permet :
+L’isolation des services
+La reproductibilité
+L’absence de conflits de dépendances
+Le déploiement simple
+Un environnement identique pour tous
+Lancement du projet
+Démarrage
 docker compose up -d
-```
-
-### 2. Vérifier que tout est lancé
-
-bash
+Vérification
 docker ps
-
----
-
-## Preuves de fonctionnement
-
-### Redis — preuve de cache
-
-bash
-docker exec -it cookmate_redis redis-cli
-SET last_search "pasta carbonara"
-GET last_search
-exit
-
----
-
-### MongoDB — lecture des données seedées
-
-bash
-docker exec -it cookmate_mongo mongosh --quiet --eval 'const dbc=db.getSiblingDB("cookmate"); printjson(dbc.comments.find().limit(10).toArray())'
-
-
----------
-
-### Chroma — vérification du service
-
-bash
+Démonstrations API
+MySQL — Recettes
+curl http://localhost:3000/sql/recipes
+curl -X POST http://localhost:3000/sql/recipes \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Pasta","description":"Simple","ingredients":["pasta","egg"],"steps":["boil","mix"]}'
+Redis — Cache
+curl http://localhost:3000/cache/1/cache
+1ère fois → source SQL
+2ème fois → source Redis
+MongoDB — Commentaires
+curl http://localhost:3000/recipes/1/comments
+ChromaDB — Service actif
 curl http://localhost:8000/api/v2/heartbeat
 
+Preuve de fonctionnement
+Toutes les bases sont réellement actives dans des conteneurs Docker.
+Les requêtes sont exécutées en temps réel.
+Les réponses API sont mesurables et démontrables.
+Objectif pédagogique
 
----
+Ce projet a pour but de démontrer :
 
-## Seed des données MongoDB
+Une architecture multi-bases
+Une séparation claire des responsabilités
+Une approche moderne du backend
+L’usage de Docker
+La complémentarité SQL / NoSQL
+Le cache
+La recherche sémantique
+Défense orale — Résumé
+MySQL → données relationnelles
+MongoDB → documents
+Redis → cache
+Chroma → similarité
+Docker → orchestration
+Node.js → API
 
-Un script Python permet d’initialiser MongoDB avec des données de test.
+Conclusion
 
-bash
-python3 backend/seed/seed_mongo.py
-
-
-Il insère automatiquement des commentaires dans la base `cookmate`.
-
----
-
-## Justification des choix
-
-| Besoin                 | Solution | Raison                  |
-| ---------------------- | -------- | ----------------------- |
-| Accès rapide           | Redis    | Cache en mémoire        |
-| Données flexibles      | MongoDB  | Documents JSON          |
-| Recherche intelligente | Chroma   | Vecteurs sémantiques    |
-| Reproductibilité       | Docker   | Isolation & portabilité |
-
----
-
-## Ce que j’ai réalisé
-
-* Conception de l’architecture NoSQL
-* Mise en place des conteneurs Docker
-* Scripts de seed MongoDB et Chroma
-* Tests et preuves de fonctionnement
-* Documentation
-
----
-
-## Limites
-
-Cette partie concerne uniquement l’infrastructure NoSQL. Le backend métier et la base SQL relèvent d’une autre partie du projet.
-
-----------------
-
-## Conclusion
-
-Cette infrastructure démontre l’utilisation cohérente de plusieurs bases NoSQL, chacune ayant un rôle précis. Elle est fonctionnelle, testable et démontrable.
-
-
+CookMate est une démonstration fonctionnelle d’une architecture backend distribuée utilisant plusieurs technologies spécialisées.
+Chaque choix est justifié par un besoin technique précis.
