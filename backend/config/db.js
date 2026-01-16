@@ -1,11 +1,11 @@
 const mysql = require("mysql2");
 
 const pool = mysql.createPool({
-    host: "127.0.0.1",
-    user: "cookmate",
-    password: "cookmate",
-    database: "cookmate",
-    port: 3306,
+    host: process.env.MYSQL_HOST || "mysql",
+    user: process.env.MYSQL_USER || "cookmate",
+    password: process.env.MYSQL_PASSWORD || "cookmate",
+    database: process.env.MYSQL_DATABASE || "cookmate",
+    port: process.env.MYSQL_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
