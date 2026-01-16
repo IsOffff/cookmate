@@ -3,9 +3,11 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/sql/recipes", require("./routes/recipes"));
-app.use("/cache", require("./routes/cache"));
-app.use("/recipes", require("./routes/comments"));
+app.use("/recipes", require("./routes/recipes"));
+
+
+app.use("/comments", require("./routes/comments"));
+
 app.use("/similar", require("./routes/similar"));
 
 app.listen(3000, () => console.log("Backend running"));

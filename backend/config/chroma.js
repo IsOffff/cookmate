@@ -1,12 +1,11 @@
 const axios = require("axios");
+
 const CHROMA_URL = process.env.CHROMA_URL || "http://chroma:8000";
+const COLLECTION = "recipes";
 
-const TENANT = process.env.CHROMA_TENANT || "default_tenant";
-const DB = process.env.CHROMA_DB || "default_database";
-const COLLECTION = process.env.CHROMA_COLLECTION || "recipes";
-
+// Base API v1 simple
 function collectionBase() {
-    return `${CHROMA_URL}/api/v2/tenants/${TENANT}/databases/${DB}/collections`;
+    return `${CHROMA_URL}/api/v1/collections`;
 }
 
 async function ensureCollection() {
@@ -16,22 +15,31 @@ async function ensureCollection() {
     });
 }
 
-module.exports = {
-    async addEmbedding(id, doc, embedding) {
-        await ensureCollection();
-        return axios.post(`${collectionBase()}/${COLLECTION}/add`, {
-            ids: [String(id)],
-            documents: [String(doc)],
-            embeddings: [embedding]
-        });
-    },
+function generateEmbeddingFromIngredients(ingredients) {
+    const text = ingredients.join(" ").toLowerCase();
+    const vector = new Array(8).fill(0);
 
-    async similar(id) {
-        await ensureCollection();
-
-        return {
-            note: "Chroma v2 OK. Similarity requires query_embeddings. TP demo uses heartbeat.",
-            results: []
-        };
+    for (let i = 0; i < text.length; i++) {
+        vector[i % vector.length] += text.charCodeAt(i) / 100;
     }
+
+    return vector;
+}
+
+async function querySimilar(embedding, limit = 3) {
+    await ensureCollection();
+
+    const response = await axios.post(
+        `${collectionBase()}/${COLLECTION}/query`, {
+            query_embeddings: [embedding],
+            n_results: limit
+        }
+    );
+
+    return response.data;
+}
+
+module.exports = {
+    generateEmbeddingFromIngredients,
+    querySimilar
 };
